@@ -1,0 +1,1 @@
+insert into wallets(id, balance) values(gen_random_uuid(), 2000);
