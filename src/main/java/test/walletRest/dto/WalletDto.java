@@ -9,10 +9,20 @@ import java.util.UUID;
 public class WalletDto {
     @NotNull(message = "Id must be format UUID")
     private UUID id;
-    @NotNull(message = "OperationType must be DEPOSIT or WITHDRAW ")
+    @NotNull(message = "OperationType must be DEPOSIT or WITHDRAW")
     private OperationType operationType;
     @Min(value = 1, message = "Amount must be greater than 0")
     private double amount;
+
+    public WalletDto() {
+
+    }
+
+    public WalletDto(UUID id, OperationType operationType, double amount) {
+        this.id = id;
+        this.operationType = operationType;
+        this.amount = amount;
+    }
 
     public UUID getId() {
         return id;

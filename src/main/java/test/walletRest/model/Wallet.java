@@ -12,4 +12,17 @@ public class Wallet {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private double balance;
+
+    public Wallet() {
+
+    }
+
+    public Wallet(double balance) {
+        this.balance = balance;
+    }
+
+    public Wallet(UUID id, double balance) {
+        this.id = id;
+        this.balance = balance;
+    }
 }
