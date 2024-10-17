@@ -1,5 +1,7 @@
-FROM openjdk:17-jdk-alpine
+FROM maven:3.9.6-openjdk-17
 WORKDIR /app
-COPY target/wallet-rest-app.jar app.jar
+COPY . .
+RUN mvn package -Dmaven.test.skip=true
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["mvn", "liquibase:update", "-Pdocker"]
+CMD ["java", "-jar", "target/walletRest.jar"]
