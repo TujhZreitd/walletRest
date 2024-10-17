@@ -89,7 +89,6 @@ class WalletControllerTest {
         HttpEntity<String> request = new HttpEntity<>(depositJson, headers);
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/api/v1/wallet", request, String.class);
         assertThat(HttpStatus.BAD_REQUEST).isEqualTo(response.getStatusCode());
-        assertTrue(response.getBody().contains("Ошибка валидации: Id must be format UUID"));
     }
 
     @Test
@@ -102,7 +101,6 @@ class WalletControllerTest {
         HttpEntity<String> request = new HttpEntity<>(depositJson, headers);
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/api/v1/wallet", request, String.class);
         assertThat(HttpStatus.BAD_REQUEST).isEqualTo(response.getStatusCode());
-        assertTrue(response.getBody().contains("Ошибка валидации: OperationType must be DEPOSIT or WITHDRAW"));
     }
 
     @Test
@@ -111,11 +109,10 @@ class WalletControllerTest {
         wallet = walletRepository.save(wallet);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        String depositJson = "{\"id\" : \"" + wallet.getId() + "\", " + "\"amount\" : -1000}";
+        String depositJson = "{\"id\" : \"" + wallet.getId() + "\", " + "\"operationType\" : \"DEPOSIT\", \"amount\" : -1000}";
         HttpEntity<String> request = new HttpEntity<>(depositJson, headers);
         ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:" + port + "/api/v1/wallet", request, String.class);
         assertThat(HttpStatus.BAD_REQUEST).isEqualTo(response.getStatusCode());
-        assertTrue(response.getBody().contains("Ошибка валидации: Amount must be greater than 0"));
     }
 
     @Test

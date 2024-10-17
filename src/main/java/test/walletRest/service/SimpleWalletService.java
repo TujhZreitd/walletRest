@@ -1,5 +1,8 @@
 package test.walletRest.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,25 +11,23 @@ import test.walletRest.exception.InsufficientFundsException;
 import test.walletRest.exception.WalletNotFoundException;
 import test.walletRest.model.OperationType;
 import test.walletRest.model.Wallet;
-import test.walletRest.repository.WalletRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
 @Service
 public class SimpleWalletService implements WalletService {
 
-    private final WalletRepository walletRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     @Override
     public void update(WalletDto walletDto) {
-        Optional<Wallet> optionalWallet = walletRepository.findById(walletDto.getId());
-        if (optionalWallet.isEmpty()) {
+        Wallet wallet = entityManager.find(Wallet.class, walletDto.getId(), LockModeType.PESSIMISTIC_WRITE);
+        if (wallet == null) {
             throw new WalletNotFoundException(walletDto.getId());
         }
-        Wallet wallet = optionalWallet.get();
         if (walletDto.getOperationType() == OperationType.DEPOSIT) {
             wallet.setBalance(wallet.getBalance() + walletDto.getAmount());
         } else if (walletDto.getOperationType() == OperationType.WITHDRAW) {
@@ -35,15 +36,15 @@ public class SimpleWalletService implements WalletService {
             }
             wallet.setBalance(wallet.getBalance() - walletDto.getAmount());
         }
-        walletRepository.save(wallet);
+        entityManager.merge(wallet);
     }
 
     @Override
     public double getBalance(UUID id) {
-        Optional<Wallet> optionalWallet = walletRepository.findById(id);
-        if (optionalWallet.isEmpty()) {
+        Wallet wallet = entityManager.find(Wallet.class, id);
+        if (wallet == null) {
             throw new WalletNotFoundException(id);
         }
-        return optionalWallet.get().getBalance();
+        return wallet.getBalance();
     }
 }
